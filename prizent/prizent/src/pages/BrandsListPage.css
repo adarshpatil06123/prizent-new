@@ -1,8 +1,7 @@
 .brands-page {
   display: flex;
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
   background: url('../assets/artistic-blurry-colorful-wallpaper-background.jpeg') center/cover no-repeat;
   overflow: hidden;
   position: fixed;
@@ -14,10 +13,10 @@
 
 /* Sidebar Styles */
 .sidebar {
-  width: 260px;
+  width: 120px;
   height: 100vh;
   background: #1E1E1E;
-  border-radius: 0 30px 30px 0;
+  border-radius: 0 20px 20px 0;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -29,15 +28,15 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 44px 0;
+  padding: 15px 0;
 }
 
 .logo-container {
   position: absolute;
-  left: 22px;
-  top: 44px;
-  width: 60px;
-  height: 60px;
+  left: 12px;
+  top: 15px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,8 +164,16 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 34px 40px;
+  padding: 10px 15px;
+  height: 100vh;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar for webkit browsers */
+.main-content::-webkit-scrollbar {
+  display: none;
 }
 
 /* Header */
@@ -174,14 +181,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
   border-bottom: 0.75px solid #E4E4E4;
 }
 
 .breadcrumb {
   font-family: 'Murecho', sans-serif;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 500;
   color: #5B5B5B;
   margin: 0;
@@ -219,15 +226,15 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 28px;
+  margin-bottom: 10px;
 }
 
 .page-title {
   font-family: 'Murecho', sans-serif;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   color: #000000;
-  margin: 0 0 6px 0;
+  margin: 0 0 4px 0;
 }
 
 .page-subtitle {
@@ -265,9 +272,19 @@
 .brands-table-container {
   background: #FAFBFF;
   border: 0.5px solid #DCDADA;
-  border-radius: 13px;
+  border-radius: 8px;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.03);
-  padding: 25px 30px 30px 30px;
+  padding: 12px 15px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar for webkit browsers */
+.brands-table-container::-webkit-scrollbar {
+  display: none;
 }
 
 .brands-table {
@@ -277,11 +294,11 @@
 
 .brands-table thead th {
   font-family: 'Murecho', sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 500;
   color: #1A1A1A;
   text-align: left;
-  padding-bottom: 22px;
+  padding-bottom: 12px;
   border-bottom: 0.75px solid #E4E4E4;
 }
 
@@ -314,17 +331,17 @@
 }
 
 .brands-table tbody td {
-  padding: 27px 0;
+  padding: 12px 0;
   font-family: 'Murecho', sans-serif;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 400;
   color: #454545;
 }
 
 .brand-logo {
-  width: 51px;
-  height: 51px;
-  border-radius: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 3px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -347,25 +364,27 @@
 }
 
 /* Status Badge */
-.status-badge {
+.brands-page .status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 5px 23px;
-  border-radius: 10px;
+  padding: 6px 16px;
+  border-radius: 20px;
   font-family: 'Murecho', sans-serif;
-  font-size: 14px;
   font-weight: 400;
-  min-width: 60px;
+  font-size: 14px;
+  line-height: 20px;
+  min-width: 70px;
+  text-align: center;
 }
 
-.status-badge.active {
+.brands-page .status-badge.active {
   background: #CFFACF;
   border: 1px solid #008000;
   color: #008000;
 }
 
-.status-badge.inactive {
+.brands-page .status-badge.inactive {
   background: #F8D1D1;
   border: 1px solid #BF2020;
   color: #BF2020;

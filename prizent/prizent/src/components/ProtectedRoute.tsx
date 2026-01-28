@@ -8,8 +8,23 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
-  const { isAuthenticated, isAdmin, user } = useAuth();
+  const { isAuthenticated, isAdmin, user, isInitializing } = useAuth();
   const location = useLocation();
+
+  // Show loading while initializing authentication
+  if (isInitializing) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '16px'
+      }}>
+        Loading...
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     // Redirect to login page with return url

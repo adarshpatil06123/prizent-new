@@ -17,6 +17,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;
+  isInitializing: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
@@ -120,31 +122,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize user from existing token on app start
   useEffect(() => {
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const currentTime = Date.now() / 1000;
-        
-        // Check if token is expired
-        if (payload.exp && payload.exp < currentTime) {
-          logout();
-        } else {
-          const userData: User = {
-            id: payload.user_id,
-            username: payload.sub,
-            name: payload.sub,
-            emailId: payload.sub,
-            role: payload.role,
-            clientId: payload.client_id
-          };
-          setUser(userData);
+    const initializeAuth = async () => {
+      console.log('AuthContext: Initializing authentication...');
+      setIsInitializing(true);
+      
+      if (token) {
+        try {
+          console.log('AuthContext: Validating existing token...');
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const currentTime = Date.now() / 1000;
+          
+          console.log('AuthContext: Token payload:', payload);
+          console.log('AuthContext: Current time:', currentTime, 'Token expires at:', payload.exp);
+          
+          // Check if token is expired (with 5 minute buffer)
+          if (payload.exp && payload.exp < (currentTime + 300)) {
+            console.log('AuthContext: Token is expired or expiring soon, logging out');
+            await logout();
+          } else {
+            console.log('AuthContext: Token is valid, setting user data');
+            const userData: User = {
+              id: payload.user_id,
+              username: payload.sub,
+              name: payload.sub,
+              emailId: payload.sub,
+              role: payload.role,
+              clientId: payload.client_id
+            };
+            setUser(userData);
+          }
+        } catch (error) {
+          console.error('Token validation error:', error);
+          await logout();
         }
-      } catch (error) {
-        console.error('Token validation error:', error);
-        logout();
       }
-    }
-  }, [token, logout]);
+      
+      setIsInitializing(false);
+      console.log('AuthContext: Initialization complete');
+    };
+    
+    initializeAuth();
+  }, []);
 
   return (
     <AuthContext.Provider value={{
@@ -154,7 +172,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout,
       isAuthenticated: !!token && !!user,
       isAdmin: user?.role === 'ADMIN',
-      isLoading
+      isLoading,
+      isInitializing
     }}>
       {children}
     </AuthContext.Provider>

@@ -221,7 +221,7 @@ const BrandsListPage: React.FC = () => {
                     <td className="brand-description">{brand.description}</td>
                     <td>
                       <span className={`status-badge ${brand.enabled ? 'active' : 'inactive'}`}>
-                        {brand.enabled ? 'Active' : 'Inactive'}
+                        {brand.enabled ? 'Active' : 'Inactive'} 
                       </span>
                     </td>
                     <td>

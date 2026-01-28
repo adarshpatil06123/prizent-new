@@ -3,10 +3,38 @@ class ApiService {
 
   private getHeaders() {
     const token = localStorage.getItem('token');
+    console.log('ApiService: Getting headers, token exists:', !!token);
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Date.now() / 1000;
+        console.log('ApiService: Token expires at:', payload.exp, 'Current time:', currentTime, 'Is expired:', payload.exp < currentTime);
+      } catch (e) {
+        console.error('ApiService: Token decode error:', e);
+      }
+    }
     return {
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `Bearer ${token}` })
     };
+  }
+
+  private async handleResponse(response: Response) {
+    if (response.status === 401 || response.status === 403) {
+      console.log('Authentication failed, clearing token and redirecting to login');
+      // Token is invalid or expired, clear it and redirect to login
+      localStorage.removeItem('token');
+      // Use window.location.replace to avoid back button issues
+      window.location.replace('/login');
+      throw new Error('Authentication required');
+    }
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    
+    return response.json();
   }
 
   async login(username: string, password: string) {
@@ -165,25 +193,22 @@ class ApiService {
       headers: this.getHeaders()
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return response.json();
+    return this.handleResponse(response);
   }
 
   async createBrand(brandData: { name: string; description: string; enabled: boolean }) {
+    console.log('ApiService: Creating brand with data:', brandData);
+    console.log('ApiService: Using headers:', this.getHeaders());
+    
     const response = await fetch(`${this.baseURL}/api/admin/brands`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify(brandData)
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    console.log('ApiService: Create brand response status:', response.status);
     
-    return response.json();
+    return this.handleResponse(response);
   }
 
   async updateBrand(brandId: string, brandData: { name: string; description: string; enabled: boolean }) {
@@ -193,11 +218,7 @@ class ApiService {
       body: JSON.stringify(brandData)
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return response.json();
+    return this.handleResponse(response);
   }
 
   async deleteBrand(brandId: string) {
@@ -206,11 +227,7 @@ class ApiService {
       headers: this.getHeaders()
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return response.json();
+    return this.handleResponse(response);
   }
 }
 

@@ -18,19 +18,22 @@ public class JwtUtil {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
     private final SecretKey secretKey;
+    private final long jwtExpirationMs;
 
     // JWT claim keys
     public static final String CLAIM_CLIENT_ID = "client_id";
     public static final String CLAIM_USER_ID = "user_id";
     public static final String CLAIM_ROLE = "role";
 
-    public JwtUtil(@Value("${jwt.secret:mySecretKeyForDevelopmentOnlyChangeInProduction}") String secret) {
+    public JwtUtil(@Value("${jwt.secret:mySecretKeyForDevelopmentOnlyChangeInProduction}") String secret,
+                   @Value("${jwt.expiration:14400000}") long jwtExpirationMs) {
         // Ensure the secret is strong enough (minimum 32 bytes for HS256)
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         if (keyBytes.length < 32) {
             throw new IllegalArgumentException("JWT secret must be at least 32 bytes for HS256");
         }
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        this.jwtExpirationMs = jwtExpirationMs;
     }
 
     /**
